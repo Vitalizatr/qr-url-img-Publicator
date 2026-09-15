@@ -5,7 +5,6 @@ import httpx
 from services.img_to_url import URLPublicatorAPI
 from typing import Annotated
 import os
-import os
 from dotenv import  load_dotenv
 
 load_dotenv() 
@@ -29,7 +28,7 @@ app = FastAPI(
 
 APIConection = Annotated[URLPublicatorAPI,Depends(URLPublicatorAPI.as_dependency)]
 
-@app.post("/")
+@app.post("/url/")
 async def url_to_qr(url: str,api_service : APIConection):
     try:
         generated_qr_bytes = qr.url_to_qr(url)
@@ -50,4 +49,28 @@ async def url_to_qr(url: str,api_service : APIConection):
             detail=f"Внутренняя ошибка сервера: {str(e)}"
         )
 
+
+@app.post("/img/")
+async def url_to_qr(img: str,api_service : APIConection):
+    try:
+        
+        result = await api_service.public_qr(img)
+        generated_qr_bytes = qr.url_to_qr(result['url'])
+        return {
+            'qr' : generated_qr_bytes
+        }
+        
+    except httpx.HTTPStatusError as e:
+        print(f"[ERROR] ImgBB API Error: {e.response.status_code} - {e.response.text}")
+        raise HTTPException(
+            status_code=e.response.status_code, 
+            detail=f"Ошибка при публикации на ImgBB: {e.response.text}"
+        )
+    except Exception as e:
+        print("[ERROR] Внутренняя ошибка сервера:")
+        
+        raise HTTPException(
+            status_code=500, 
+            detail=f"Внутренняя ошибка сервера: {str(e)}"
+        )
 
