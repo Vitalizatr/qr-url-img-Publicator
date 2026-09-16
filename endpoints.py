@@ -55,7 +55,7 @@ async def url_to_qr(img: str,api_service : APIConection):
     try:
         
         result = await api_service.public_qr(img)
-        generated_qr_bytes = qr.url_to_qr(result['url'])
+        generated_qr_bytes = qr.url_to_qr(result['data']['url'])
         return {
             'qr' : generated_qr_bytes
         }
