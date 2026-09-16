@@ -71,6 +71,6 @@ async def url_to_qr(img: str,api_service : APIConection):
         
         raise HTTPException(
             status_code=500, 
+
             detail=f"Внутренняя ошибка сервера: {str(e)}"
         )
-
